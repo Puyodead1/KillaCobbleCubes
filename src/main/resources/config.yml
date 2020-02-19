@@ -1,0 +1,18 @@
+# Made by Puyodead1
+settings:
+  max size: 15
+  cobblecube:
+    name: "&e&lCOBBLE&6&lCUBE &7(Place Down)"
+    skull: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzYxYzU3OTc0ZjEwMmQzZGViM2M1M2Q0MmZkZTkwOWU5YjM5Y2NiYzdmNzc2ZTI3NzU3NWEwMmQ1MWExOTk5ZSJ9fX0=" # Base64 from minecraft-heads.com
+    lore:
+    - "&7This CobbleCube will automatically generate"
+    - "&7ore depending on the upgrades."
+    - ""
+    - "&6&l* &e&lSize: &f&l%CUBE_SIZE%"
+    - ""
+    - "&7(( &fPlace Down &7this CobbleCube to begin generating ores ))"
+
+messages:
+  invalid player: "&cInvalid Player!"
+  invalid number: "&cInvalid Number!"
+  invalid cube: "&cInvalid Cube!"

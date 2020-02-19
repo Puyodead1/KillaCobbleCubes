@@ -1,0 +1,8 @@
+name: Killa-Cobblecube
+version: ${project.version}
+main: me.puyodead1.killacobblecube.KillaCobblecube
+depend: [ASkyBlock]
+authors: [Puyodead1]
+commands:
+  cobblecubes:
+    description: Main cobblecube command
