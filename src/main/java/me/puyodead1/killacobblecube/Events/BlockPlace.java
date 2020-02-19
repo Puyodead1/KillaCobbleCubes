@@ -35,15 +35,11 @@ public class BlockPlace implements Listener {
                     // TODO: generate cube structure
                     // TODO: add inner cube dimentions to CobbleCube constructor
                     // TODO: start generation task
-                    final int minX = e.getBlock().getX();
-                    final int minY = e.getBlock().getY();
-                    final int minZ = e.getBlock().getZ();
-                    final int maxX = e.getBlock().getX() + cubesize;
-                    final int maxY = e.getBlock().getX() + cubesize;
-                    final int maxZ = e.getBlock().getX() + cubesize;
+                    final int x = e.getBlock()
 
-                    final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), minX, minY, minZ, maxX, maxY, maxZ);
+                    final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize);
                     cobbleCube.generateFrame();
+                    cobbleCube.generateOre();
                 } else {
                     e.getPlayer().sendMessage("can only place on island");
                 }
