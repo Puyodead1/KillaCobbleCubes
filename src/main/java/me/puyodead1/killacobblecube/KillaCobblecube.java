@@ -4,12 +4,14 @@ import com.wasteofplastic.askyblock.ASkyBlockAPI;
 import me.puyodead1.killacobblecube.Commands.CobbleCubeCommand;
 import me.puyodead1.killacobblecube.Events.BlockPlace;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class KillaCobblecube extends JavaPlugin {
 
     public static KillaCobblecube plugin;
     public static ASkyBlockAPI askyblockapi;
+    public static WeightedRandomBag<Material> generationMaterials = new WeightedRandomBag<>();
 
     private final String PREFIX = "&7[&dKilla Coblecube&7] ";
 
@@ -20,7 +22,7 @@ public final class KillaCobblecube extends JavaPlugin {
         KillaCobblecubeUtils.sendConsole(PREFIX + "&b=============================================================");
 
         // Ensure essentials is installed
-        if(!Bukkit.getPluginManager().getPlugin("ASkyBlock").isEnabled()) {
+        if (!Bukkit.getPluginManager().getPlugin("ASkyBlock").isEnabled()) {
             KillaCobblecubeUtils.sendConsole(KillaCobblecubeUtils.Color("&cASkyBlock not enabled or not installed! Plugin will be disabled!"));
             Bukkit.getPluginManager().disablePlugin(this);
         }
@@ -44,6 +46,8 @@ public final class KillaCobblecube extends JavaPlugin {
     public void onDisable() {
         CobbleCubeItem.getCobblecubes().clear();
         plugin = null;
+        Bukkit.getScheduler().cancelTasks(this);
+        generationMaterials = null;
     }
 
     public void initConfig() {
@@ -51,6 +55,11 @@ public final class KillaCobblecube extends JavaPlugin {
 
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
+
+        for (String s : getConfig().getStringList("settings.generation blocks")) {
+            final Material material = Material.valueOf(s);
+            generationMaterials.addEntry(material, getConfig().getInt("generation block rarities." + s));
+        }
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Configuration &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }

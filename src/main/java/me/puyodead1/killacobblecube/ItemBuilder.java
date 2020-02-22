@@ -155,7 +155,7 @@ public class ItemBuilder {
     }
     /**
      * Remove a lore line.
-     * @param lore The lore to remove.
+     * @param line The lore to remove.
      */
     public ItemBuilder removeLoreLine(String line){
         ItemMeta im = is.getItemMeta();

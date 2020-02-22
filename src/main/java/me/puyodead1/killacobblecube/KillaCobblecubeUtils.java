@@ -54,7 +54,7 @@ public class KillaCobblecubeUtils {
     }
 
     public static ArrayList<Block> getBlocks(Block start, int radius) {
-        ArrayList<Block> blocks = new ArrayList<Block>();
+        final ArrayList<Block> blocks = new ArrayList<>();
         for (double x = start.getLocation().getX() - radius; x <= start.getLocation().getX() + radius; x++) {
             for (double y = start.getLocation().getY() - radius; y <= start.getLocation().getY() + radius; y++) {
                 for (double z = start.getLocation().getZ() - radius; z <= start.getLocation().getZ() + radius; z++) {
@@ -63,6 +63,21 @@ public class KillaCobblecubeUtils {
                 }
             }
         }
+        return blocks;
+    }
+
+    public static ArrayList<Location> getBlocks(Location loc1, Location loc2) {
+        final ArrayList<Location> blocks = new ArrayList<>();
+
+        for (double x = loc1.getX(); x <= loc2.getX(); x++) {
+            for (double y = loc1.getY(); y <= loc2.getY(); y++) {
+                for (double z = loc1.getZ(); z <= loc2.getZ(); z++) {
+                    final Location block = new Location(loc1.getWorld(), (int) x, (int) y, (int) z);
+                    blocks.add(block);
+                }
+            }
+        }
+
         return blocks;
     }
 
