@@ -5,13 +5,20 @@ import me.puyodead1.killacobblecube.Commands.CobbleCubeCommand;
 import me.puyodead1.killacobblecube.Events.BlockPlace;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public final class KillaCobblecube extends JavaPlugin {
 
     public static KillaCobblecube plugin;
     public static ASkyBlockAPI askyblockapi;
-    public static WeightedRandomBag<Material> generationMaterials = new WeightedRandomBag<>();
+    public static WeightedRandomMaterial<Material> generationMaterials = new WeightedRandomMaterial<>();
+    public static File dataFile;
+    public static YamlConfiguration dataYaml;
 
     private final String PREFIX = "&7[&dKilla Coblecube&7] ";
 
@@ -30,6 +37,8 @@ public final class KillaCobblecube extends JavaPlugin {
         initConfig();
         initEvents();
         InitCommands();
+        InitCubeItems();
+        InitData();
         InitCubes();
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&d========================");
@@ -48,6 +57,8 @@ public final class KillaCobblecube extends JavaPlugin {
         plugin = null;
         Bukkit.getScheduler().cancelTasks(this);
         generationMaterials = null;
+
+        // TODO: Save all active cubes to the data file
     }
 
     public void initConfig() {
@@ -58,7 +69,7 @@ public final class KillaCobblecube extends JavaPlugin {
 
         for (String s : getConfig().getStringList("settings.generation blocks")) {
             final Material material = Material.valueOf(s);
-            generationMaterials.addEntry(material, getConfig().getInt("generation block rarities." + s));
+            generationMaterials.addEntry(material, getConfig().getInt("settings.generation block rarities." + s));
         }
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Configuration &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
@@ -72,7 +83,7 @@ public final class KillaCobblecube extends JavaPlugin {
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Events &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }
 
-    public void InitCubes() {
+    public void InitCubeItems() {
         final long STARTED = System.currentTimeMillis();
 
         for (int x = 1; x < getConfig().getInt("settings.max size"); x++) {
@@ -88,5 +99,36 @@ public final class KillaCobblecube extends JavaPlugin {
         getCommand("cobblecubes").setExecutor(new CobbleCubeCommand());
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Commands &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
+    }
+
+    /**
+     * This method loads the data file which stores the cubes
+     */
+    public void InitData() {
+        final long STARTED = System.currentTimeMillis();
+
+        dataFile = new File(getDataFolder() + File.separator + "_data.yml");
+        if(!dataFile.exists()) {
+            try {
+                dataFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                KillaCobblecubeUtils.sendConsole(PREFIX + "&cFAILED TO CREATE DATA FILE!");
+            }
+        }
+        dataYaml = YamlConfiguration.loadConfiguration(dataFile);
+
+        KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Data File &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
+    }
+
+    /**
+     * this method loads the existing cubes and starts OreGenerationTasks
+     */
+    public void InitCubes() {
+        final long STARTED = System.currentTimeMillis();
+
+        // TODO: Load all active cubes from data file
+
+        KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded " + CobbleCube.getCobbleCubes().size() + " Cubes &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }
 }

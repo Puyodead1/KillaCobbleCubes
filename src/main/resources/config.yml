@@ -1,7 +1,8 @@
 # Made by Puyodead1
 settings:
   max size: 15 # max cube size
-  generation delay: 7 # in seconds
+  generation delay: 7 # delay between each ore respawn, in seconds
+  max block gen per cycle: 7 # the max amount of blocks that can be generated every generation cycle
   generation blocks: # blocks that are able to be generated
     - "COAL_ORE"
     - "COBBLESTONE"
@@ -19,7 +20,8 @@ settings:
     IRON_ORE: 9
     REDSTONE_ORE: 12
   cube material: "BEDROCK" # the material for the cube outline/frame
-  cobblecube:
+
+  cobblecube: # settings for the cube item
     name: "&e&lCOBBLE&6&lCUBE &7(Place Down)"
     skull: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzYxYzU3OTc0ZjEwMmQzZGViM2M1M2Q0MmZkZTkwOWU5YjM5Y2NiYzdmNzc2ZTI3NzU3NWEwMmQ1MWExOTk5ZSJ9fX0=" # Base64 from minecraft-heads.com
     lore:

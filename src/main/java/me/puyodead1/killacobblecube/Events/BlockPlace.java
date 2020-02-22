@@ -38,9 +38,6 @@ public class BlockPlace implements Listener {
 
                     final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize);
                     cobbleCube.generateFrame();
-                    final OreGenerationTask task = new OreGenerationTask(cobbleCube);
-                    final BukkitScheduler scheduler = Bukkit.getScheduler();
-                    Bukkit.broadcastMessage(scheduler.isCurrentlyRunning(task.getTaskID()) + "");
                 } else {
                     e.getPlayer().sendMessage("can only place on island");
                 }

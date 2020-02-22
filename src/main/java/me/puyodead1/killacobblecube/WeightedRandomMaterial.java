@@ -1,12 +1,13 @@
 package me.puyodead1.killacobblecube;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class WeightedRandomBag<Material> {
+public class WeightedRandomMaterial<Material> {
 
     /**
      * This class was found here: https://gamedev.stackexchange.com/a/162987

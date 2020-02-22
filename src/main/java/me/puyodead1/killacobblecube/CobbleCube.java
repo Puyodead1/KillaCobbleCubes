@@ -15,6 +15,7 @@ public class CobbleCube {
     private int size;
     private Location oreGenCubeMin, oreGenCubeMax;
     private ArrayList<Location> oreGenCubeBlocks;
+    private OreGenerationTask task;
 
     public static HashMap<Location, CobbleCube> cobbleCubes = new HashMap<>();
     private ArrayList<Block> blocks;
@@ -66,6 +67,10 @@ public class CobbleCube {
         this.oreGenCubeMax = oreGenCubeMax;
     }
 
+    public OreGenerationTask getTask() {
+        return task;
+    }
+
     public void generateFrame() {
         final int boxSize = size + 2;
         final ArrayList<Block> blocks = new ArrayList<>();
@@ -98,10 +103,11 @@ public class CobbleCube {
         for (Location l : oreGenCubeBlocks) {
             l.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());
         }
+
+        task = new OreGenerationTask(this);
     }
 
     public void generateOre() {
-        // TODO: add a random ore to the inside of the cube every 7 seconds
         final ArrayList<Location> emptyBlocks = new ArrayList<>();
 
         for (Location loc : oreGenCubeBlocks) {
@@ -110,8 +116,20 @@ public class CobbleCube {
             }
         }
 
-        for(Location loc : emptyBlocks) {
-            loc.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());
+        if (emptyBlocks.size() > 0) { // only run if there are empty blocks
+            final Random rand = new Random();
+            final int r = rand.nextInt(KillaCobblecube.plugin.getConfig().getInt("settings.max block gen per cycle"));
+            Bukkit.broadcastMessage(r + "");
+
+            for (int x = 0; x < r; x++) {
+                try {
+                    final Location l = emptyBlocks.get(rand.nextInt(emptyBlocks.size()));
+                    l.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());
+                    emptyBlocks.remove(l);
+                } catch (IndexOutOfBoundsException e) {
+                    break;
+                }
+            }
         }
     }
 }
