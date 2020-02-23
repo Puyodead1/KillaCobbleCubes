@@ -33,8 +33,7 @@ public class BlockPlace implements Listener {
                 if(islandBlocks.contains(e.getBlock())) {
                     final int cubesize = Integer.parseInt(ChatColor.stripColor(e.getPlayer().getItemInHand().getItemMeta().getLore().get(3)).split(": ")[1].split("x")[0]);
 
-                    // TODO check if there are blocks in the way
-                    // TODO: add inner cube dimentions to CobbleCube constructor
+                    // TODO: check if there are blocks in the way
 
                     final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize);
                     cobbleCube.generateFrame();

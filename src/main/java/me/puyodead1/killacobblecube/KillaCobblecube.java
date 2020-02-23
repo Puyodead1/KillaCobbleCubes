@@ -2,6 +2,7 @@ package me.puyodead1.killacobblecube;
 
 import com.wasteofplastic.askyblock.ASkyBlockAPI;
 import me.puyodead1.killacobblecube.Commands.CobbleCubeCommand;
+import me.puyodead1.killacobblecube.Events.BlockBreak;
 import me.puyodead1.killacobblecube.Events.BlockPlace;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ public final class KillaCobblecube extends JavaPlugin {
     public static File dataFile;
     public static YamlConfiguration dataYaml;
 
-    private final String PREFIX = "&7[&dKilla Coblecube&7] ";
+    public final static String PREFIX = "&7[&dKilla Coblecube&7] ";
 
     @Override
     public void onEnable() {
@@ -58,7 +59,7 @@ public final class KillaCobblecube extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         generationMaterials = null;
 
-        // TODO: Save all active cubes to the data file
+        CobbleCube.saveCubes();
     }
 
     public void initConfig() {
@@ -79,6 +80,7 @@ public final class KillaCobblecube extends JavaPlugin {
         final long STARTED = System.currentTimeMillis();
 
         getServer().getPluginManager().registerEvents(new BlockPlace(), this);
+        getServer().getPluginManager().registerEvents(new BlockBreak(), this);
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Events &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }
@@ -127,7 +129,7 @@ public final class KillaCobblecube extends JavaPlugin {
     public void InitCubes() {
         final long STARTED = System.currentTimeMillis();
 
-        // TODO: Load all active cubes from data file
+        CobbleCube.loadCubes();
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded " + CobbleCube.getCobbleCubes().size() + " Cubes &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }
