@@ -92,7 +92,7 @@ public final class KillaCobblecube extends JavaPlugin {
             new CobbleCubeItem(x);
         }
 
-        KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded " + CobbleCubeItem.getCobblecubes().size() + " Cubes &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
+        KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded " + CobbleCubeItem.getCobblecubes().size() + " Cube Items &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }
 
     public void InitCommands() {

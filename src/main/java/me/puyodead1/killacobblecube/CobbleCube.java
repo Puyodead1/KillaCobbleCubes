@@ -29,6 +29,17 @@ public class CobbleCube {
         cobbleCubes.put(center, this);
     }
 
+    public static CobbleCube valueOf(Location location) {
+        for(CobbleCube c : getCobbleCubes().values()) {
+            for(Location loc : c.getOreGenCubeBlocks()) {
+                if(loc.equals(location)) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
     public int getSize() {
         return size;
     }
