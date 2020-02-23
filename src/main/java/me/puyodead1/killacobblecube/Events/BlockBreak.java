@@ -19,16 +19,14 @@ public class BlockBreak implements Listener {
 
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent e) {
-        final int exp = e.getExpToDrop();
-
         if (KillaCobblecube.askyblockapi.hasIsland(e.getPlayer().getUniqueId())) {
             Island island = KillaCobblecube.askyblockapi.getIslandOwnedBy(e.getPlayer().getUniqueId());
             final ArrayList<Block> islandBlocks = KillaCobblecubeUtils.getBlocksCheck(island, e.getBlock().getY());
 
             if(islandBlocks.contains(e.getBlock())) {
-                e.setCancelled(true);
                 final CobbleCube cube = CobbleCube.valueOf(e.getBlock().getLocation());
                 if (cube != null) {
+                    e.setCancelled(true);
                     if (e.getPlayer().hasPermission("cobblecubes.blockbreak.giveblock")) {
                         // add drop to inv
                         for(ItemStack drop : e.getBlock().getDrops()) {
@@ -39,9 +37,8 @@ public class BlockBreak implements Listener {
                         // add exp
                         e.getPlayer().giveExp(e.getExpToDrop());
                     }
+                    e.getBlock().setType(Material.AIR);
                 }
-
-                e.getBlock().setType(Material.AIR);
             } else {
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("you do not have permission to use this cube!");
@@ -51,6 +48,5 @@ public class BlockBreak implements Listener {
             e.setCancelled(true);
             e.getPlayer().sendMessage("you do not have permission to use this cube!");
         }
-        // TODO: check if the block broken was inside the ore generation location of a cube on the players island, set cancelled and add item to inv and give exp
     }
 }

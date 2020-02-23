@@ -6,7 +6,7 @@
 
     <groupId>me.puyodead1</groupId>
     <artifactId>killa-cobblecube</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT-RC1</version>
     <packaging>jar</packaging>
 
     <name>Killa Cobblecube</name>
