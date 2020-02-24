@@ -4,10 +4,12 @@ import com.wasteofplastic.askyblock.ASkyBlockAPI;
 import me.puyodead1.killacobblecube.Commands.CobbleCubeCommand;
 import me.puyodead1.killacobblecube.Events.BlockBreak;
 import me.puyodead1.killacobblecube.Events.BlockPlace;
+import me.puyodead1.killacobblecube.Events.IslandDelete;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -78,9 +80,11 @@ public final class KillaCobblecube extends JavaPlugin {
 
     public void initEvents() {
         final long STARTED = System.currentTimeMillis();
+        final PluginManager pm = getServer().getPluginManager();
 
-        getServer().getPluginManager().registerEvents(new BlockPlace(), this);
-        getServer().getPluginManager().registerEvents(new BlockBreak(), this);
+        pm.registerEvents(new BlockPlace(), this);
+        pm.registerEvents(new BlockBreak(), this);
+        pm.registerEvents(new IslandDelete(), this);
 
         KillaCobblecubeUtils.sendConsole(PREFIX + "&bLoaded Events &e(took " + (System.currentTimeMillis() - STARTED) + "ms)");
     }

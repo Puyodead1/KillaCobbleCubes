@@ -42,19 +42,20 @@ public class KillaCobblecubeUtils {
 
         for (int x = island.getMinProtectedX(); x < (island.getMinProtectedX() + island.getProtectionSize()); x++) {
             for (int z = island.getMinProtectedZ(); z < (island.getMinProtectedZ() + island.getProtectionSize()); z++) {
-                Location loc = new Location(island != null ? island.getCenter().getWorld() : null, x, y, z);
+                Location loc = new Location(island.getCenter().getWorld(), x, y, z);
                 blocks.add(loc.getBlock());
             }
         }
         return blocks;
     }
 
-    public static ArrayList<Block> getBlocks(Block start, int radius) {
-        final ArrayList<Block> blocks = new ArrayList<>();
-        for (double x = start.getLocation().getX() - radius; x <= start.getLocation().getX() + radius; x++) {
-            for (double y = start.getLocation().getY() - radius; y <= start.getLocation().getY() + radius; y++) {
-                for (double z = start.getLocation().getZ() - radius; z <= start.getLocation().getZ() + radius; z++) {
-                    Location loc = new Location(start.getWorld(), x, y, z);
+    public static ArrayList<Block> getBlocksCheck(Island island) {
+        ArrayList<Block> blocks = new ArrayList<>();
+
+        for (int x = island.getMinProtectedX(); x < (island.getMinProtectedX() + island.getProtectionSize()); x++) {
+            for (int y = 0; y < island.getCenter().getWorld().getMaxHeight(); y++) {
+                for (int z = island.getMinProtectedZ(); z < (island.getMinProtectedZ() + island.getProtectionSize()); z++) {
+                    Location loc = new Location(island.getCenter().getWorld(), x, y, z);
                     blocks.add(loc.getBlock());
                 }
             }
@@ -77,18 +78,14 @@ public class KillaCobblecubeUtils {
         return blocks;
     }
     public static ArrayList<Location> getBlocks(Location location, int size) {
-        final int boxSize = size + 2;
         final ArrayList<Location> blocks = new ArrayList<>();
 
-        for (int x = 0; x < boxSize; x++) {
-            for (int y = 0; y < boxSize; y++) {
-                for (int z = 0; z < boxSize; z++) {
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                for (int z = 0; z < size; z++) {
 
-                    Block bl = location.getBlock().getRelative(x, y, z);
-
-                    if ((x == 0 || x == boxSize - 1) && (y == 0 || y == boxSize - 1) || (x == 0 || x == boxSize - 1) && (z == 0 || z == boxSize - 1) || (y == 0 || y == boxSize - 1) && (z == 0 || z == boxSize - 1)) {
-                        blocks.add(bl.getLocation());
-                    }
+                    final Block bl = new Location(location.getWorld(), x, y, z).getBlock();
+                    blocks.add(bl.getLocation());
                 }
             }
         }

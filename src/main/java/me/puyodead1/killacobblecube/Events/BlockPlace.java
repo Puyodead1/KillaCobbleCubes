@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 
@@ -51,7 +52,7 @@ public class BlockPlace implements Listener {
                         if(!KillaCobblecubeUtils.isInAABB(e.getPlayer(), min, max)) {
                             final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize);
                             cobbleCube.generateFrame();
-                            e.getPlayer().getInventory().getItemInHand().setAmount(e.getPlayer().getInventory().getItemInHand().getAmount() - 1);
+                            e.getItemInHand().setAmount(e.getItemInHand().getAmount() - 1);
                         } else {
                             KillaCobblecubeUtils.sendPlayer(e.getPlayer(), "&cYou are in the way!");
                         }
