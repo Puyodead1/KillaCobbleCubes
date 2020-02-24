@@ -1,18 +1,14 @@
 package me.puyodead1.killacobblecube;
 
-import com.deanveloper.skullcreator.SkullCreator;
 import com.wasteofplastic.askyblock.Island;
-import com.wasteofplastic.askyblock.util.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class KillaCobblecubeUtils {
 
@@ -80,21 +76,30 @@ public class KillaCobblecubeUtils {
 
         return blocks;
     }
+    public static ArrayList<Location> getBlocks(Location location, int size) {
+        final int boxSize = size + 2;
+        final ArrayList<Location> blocks = new ArrayList<>();
 
-    public static void pasteHollowCube(Location loc, int size) {
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                for (int z = 0; z < size; z++) {
+        for (int x = 0; x < boxSize; x++) {
+            for (int y = 0; y < boxSize; y++) {
+                for (int z = 0; z < boxSize; z++) {
 
-                    Block bl = loc.getBlock().getRelative(x, y, z);
+                    Block bl = location.getBlock().getRelative(x, y, z);
 
-                    if (x == 0 || y == 0 || z == 0) {
-                        if (x == size - 1 || y == size - 1 || z == size - 1) {
-                            bl.setType(Material.BEDROCK);
-                        }
+                    if ((x == 0 || x == boxSize - 1) && (y == 0 || y == boxSize - 1) || (x == 0 || x == boxSize - 1) && (z == 0 || z == boxSize - 1) || (y == 0 || y == boxSize - 1) && (z == 0 || z == boxSize - 1)) {
+                        blocks.add(bl.getLocation());
                     }
                 }
             }
         }
+
+        return blocks;
+    }
+
+    public static boolean isInAABB(Player player, Vector min, Vector max) {
+        final double x = player.getLocation().getX();
+        final double y = player.getLocation().getY();
+        final double z = player.getLocation().getZ();
+        return x >= min.getX() && x <= max.getX() && y >= min.getY() && y <= max.getY() && z >= min.getZ() && z <= max.getZ();
     }
 }
