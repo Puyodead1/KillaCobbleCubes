@@ -93,6 +93,30 @@ public class KillaCobblecubeUtils {
         return blocks;
     }
 
+    /**
+     * Gets a list of blocks in the way of the cube
+     * @param start start block
+     * @param radius radius to search
+     * @return ArrayList of blocks
+     */
+    public static ArrayList<Block> getBlocks2(Block start, int radius) {
+        final ArrayList<Block> blocks = new ArrayList<>();
+        for (double x = start.getLocation().getX() - radius; x <= start.getLocation().getX() + radius; x++) {
+            for (double z = start.getLocation().getZ() - radius; z <= start.getLocation().getZ() + radius; z++) {
+                Location loc = new Location(start.getWorld(), x, start.getLocation().getY(), z);
+                blocks.add(loc.getBlock());
+            }
+        }
+        return blocks;
+    }
+
+    /**
+     * used for checking if a player is in the way of 2 points
+     * @param player the player
+     * @param min the frst point
+     * @param max the second point
+     * @return boolean
+     */
     public static boolean isInAABB(Player player, Vector min, Vector max) {
         final double x = player.getLocation().getX();
         final double y = player.getLocation().getY();

@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,15 +19,17 @@ public class CobbleCube {
     private Location oreGenCubeMin, oreGenCubeMax, cubeMin, cubeMax;
     private ArrayList<Location> oreGenCubeBlocks;
     private OreGenerationTask task;
+    private Player owner;
 
-    public static HashMap<Location, CobbleCube> cobbleCubes = new HashMap<>();
+    public static HashMap<Player, CobbleCube> cobbleCubes = new HashMap<>();
     private ArrayList<Location> blocks;
 
-    public CobbleCube(Location center, int size) {
+    public CobbleCube(Location center, int size, Player owner) {
         this.center = center;
         this.size = size;
+        this.owner = owner;
 
-        cobbleCubes.put(center, this);
+        cobbleCubes.put(owner, this);
     }
 
     public static CobbleCube valueOf(Location location) {
@@ -40,6 +43,16 @@ public class CobbleCube {
         return null;
     }
 
+    public static ArrayList<CobbleCube> valueOf(Player player) {
+        final ArrayList<CobbleCube> cubes = new ArrayList<>();
+        for(CobbleCube c : getCobbleCubes().values()) {
+            if(c.getOwner().equals(player)) {
+                cubes.add(c);
+            }
+        }
+        return cubes;
+    }
+
     public int getSize() {
         return size;
     }
@@ -48,7 +61,7 @@ public class CobbleCube {
         return center;
     }
 
-    public static HashMap<Location, CobbleCube> getCobbleCubes() {
+    public static HashMap<Player, CobbleCube> getCobbleCubes() {
         return cobbleCubes;
     }
 
@@ -104,6 +117,10 @@ public class CobbleCube {
         this.cubeMax = cubeMax;
     }
 
+    public Player getOwner() {
+        return owner;
+    }
+
     public static void saveCubes() {
         int saved = 0;
         for (int x = 0; x < CobbleCube.getCobbleCubes().size(); x++) {
@@ -111,6 +128,8 @@ public class CobbleCube {
             final YamlConfiguration dataYaml = KillaCobblecube.dataYaml;
             final ConfigurationSection section = dataYaml.createSection(String.valueOf(x));
 
+
+            section.set("owner uuid", c.getOwner().getUniqueId());
             section.set("size", c.getSize());
 
             final ConfigurationSection centerSection = section.createSection("center");
@@ -157,6 +176,7 @@ public class CobbleCube {
     public static void loadCubes() {
         final YamlConfiguration dataYaml = KillaCobblecube.dataYaml;
         for(String s : dataYaml.getKeys(false)) {
+            final Player player = Bukkit.getServer().getOfflinePlayer(dataYaml.getString(s + ".owner uuid")).getPlayer();
             final int size = dataYaml.getInt(s + ".size");
             final Location centerLoc = new Location(Bukkit.getServer().getWorld(dataYaml.getString(s + ".center.world")), dataYaml.getInt(s + ".center.x"), dataYaml.getDouble(s + ".center.y"), dataYaml.getDouble(s + ".center.z"));
             final Location oreMin = new Location(Bukkit.getServer().getWorld(dataYaml.getString(s + ".ore min.world")), dataYaml.getInt(s + ".ore min.x"), dataYaml.getDouble(s + ".ore min.y"), dataYaml.getDouble(s + ".ore min.z"));
@@ -164,7 +184,7 @@ public class CobbleCube {
             final Location cubeMin = new Location(Bukkit.getServer().getWorld(dataYaml.getString(s + ".cube min.world")), dataYaml.getInt(s + ".cube min.x"), dataYaml.getDouble(s + ".cube min.y"), dataYaml.getDouble(s + ".cube min.z"));
             final Location cubeMax = new Location(Bukkit.getServer().getWorld(dataYaml.getString(s + ".cube max.world")), dataYaml.getInt(s + ".cube max.x"), dataYaml.getDouble(s + ".cube max.y"), dataYaml.getDouble(s + ".cube max.z"));
 
-            final CobbleCube cube = new CobbleCube(centerLoc, size);
+            final CobbleCube cube = new CobbleCube(centerLoc, size, player);
             cube.setBlocks(KillaCobblecubeUtils.getBlocks(cubeMin, cubeMax));
             cube.setCubeMin(cubeMin);
             cube.setCubeMax(cubeMax);
@@ -244,5 +264,20 @@ public class CobbleCube {
                 }
             }
         }
+    }
+
+    /**
+     * Removes all blocks from ore gen area and the cubes frame then removes cube from list
+     */
+    public void cleanUp() {
+        for(Location loc : oreGenCubeBlocks) {
+            loc.getBlock().setType(Material.AIR);
+        }
+
+        for(Location loc : blocks) {
+            loc.getBlock().setType(Material.AIR);
+        }
+
+        CobbleCube.getCobbleCubes().remove(getOwner(), this);
     }
 }

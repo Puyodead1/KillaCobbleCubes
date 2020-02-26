@@ -34,23 +34,21 @@ public class BlockPlace implements Listener {
                 if(islandBlocks.contains(e.getBlock())) {
                     final int cubesize = Integer.parseInt(ChatColor.stripColor(e.getPlayer().getItemInHand().getItemMeta().getLore().get(3)).split(": ")[1].split("x")[0]);
 
-                    final ArrayList<Location> blocks = KillaCobblecubeUtils.getBlocks(e.getBlock().getLocation(), cubesize);
+                    final ArrayList<Block> blocks = KillaCobblecubeUtils.getBlocks2(e.getBlock(), cubesize);
                     final ArrayList<Block> blocksInWay = new ArrayList<>();
-                    blocks.remove(e.getBlock().getLocation());
-                    for (Location l : blocks) {
-                        final Block b = l.getBlock();
+                    blocks.remove(e.getBlock());
+                    for (Block b: blocks) {
                         if (!b.getType().equals(Material.AIR)) {
-                            Bukkit.broadcastMessage(b.getType().name());
                             blocksInWay.add(b);
                         }
                     }
 
-                    final Vector min = new Vector(blocks.get(0).getX(), blocks.get(0).getY(), blocks.get(0).getZ());
+                    final Vector min = blocks.get(0).getLocation().toVector();
                     final Vector max = new Vector(blocks.get(blocks.size() - 1).getX(), blocks.get(blocks.size() - 1).getY(), blocks.get(blocks.size() - 1).getZ());
 
                     if (blocksInWay.size() == 0) {
                         if(!KillaCobblecubeUtils.isInAABB(e.getPlayer(), min, max)) {
-                            final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize);
+                            final CobbleCube cobbleCube = new CobbleCube(e.getBlock().getLocation(), cubesize, e.getPlayer());
                             cobbleCube.generateFrame();
                             e.getItemInHand().setAmount(e.getItemInHand().getAmount() - 1);
                         } else {

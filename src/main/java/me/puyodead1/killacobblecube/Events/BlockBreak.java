@@ -19,34 +19,36 @@ public class BlockBreak implements Listener {
 
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent e) {
-        if (KillaCobblecube.askyblockapi.hasIsland(e.getPlayer().getUniqueId())) {
-            Island island = KillaCobblecube.askyblockapi.getIslandOwnedBy(e.getPlayer().getUniqueId());
-            final ArrayList<Block> islandBlocks = KillaCobblecubeUtils.getBlocksCheck(island, e.getBlock().getY());
+        if(CobbleCube.valueOf(e.getBlock().getLocation()) != null) {
+            if (KillaCobblecube.askyblockapi.hasIsland(e.getPlayer().getUniqueId())) {
+                Island island = KillaCobblecube.askyblockapi.getIslandOwnedBy(e.getPlayer().getUniqueId());
+                final ArrayList<Block> islandBlocks = KillaCobblecubeUtils.getBlocksCheck(island, e.getBlock().getY());
 
-            if(islandBlocks.contains(e.getBlock())) {
-                final CobbleCube cube = CobbleCube.valueOf(e.getBlock().getLocation());
-                if (cube != null) {
-                    e.setCancelled(true);
-                    if (e.getPlayer().hasPermission("cobblecubes.blockbreak.giveblock")) {
-                        // add drop to inv
-                        for(ItemStack drop : e.getBlock().getDrops()) {
-                            e.getPlayer().getInventory().addItem(drop);
+                if(islandBlocks.contains(e.getBlock())) {
+                    final CobbleCube cube = CobbleCube.valueOf(e.getBlock().getLocation());
+                    if (cube != null) {
+                        e.setCancelled(true);
+                        if (e.getPlayer().hasPermission("cobblecubes.blockbreak.giveblock")) {
+                            // add drop to inv
+                            for(ItemStack drop : e.getBlock().getDrops()) {
+                                e.getPlayer().getInventory().addItem(drop);
+                            }
                         }
+                        if (e.getPlayer().hasPermission("cobblecubes.blockbreak.giveexp")) {
+                            // add exp
+                            e.getPlayer().giveExp(e.getExpToDrop());
+                        }
+                        e.getBlock().setType(Material.AIR);
                     }
-                    if (e.getPlayer().hasPermission("cobblecubes.blockbreak.giveexp")) {
-                        // add exp
-                        e.getPlayer().giveExp(e.getExpToDrop());
-                    }
-                    e.getBlock().setType(Material.AIR);
+                } else {
+                    e.setCancelled(true);
+                    e.getPlayer().sendMessage("you do not have permission to use this cube!");
                 }
+
             } else {
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("you do not have permission to use this cube!");
             }
-
-        } else {
-            e.setCancelled(true);
-            e.getPlayer().sendMessage("you do not have permission to use this cube!");
         }
     }
 }
