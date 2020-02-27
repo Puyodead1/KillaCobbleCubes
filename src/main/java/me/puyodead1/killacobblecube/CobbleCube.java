@@ -20,8 +20,10 @@ public class CobbleCube {
     private ArrayList<Location> oreGenCubeBlocks;
     private OreGenerationTask task;
     private Player owner;
+    private PlayerStorage playerStorage;
 
-    public static HashMap<Player, CobbleCube> cobbleCubes = new HashMap<>();
+    //public static HashMap<Player, CobbleCube> cobbleCubes = new HashMap<>();
+    public static ArrayList<CobbleCube> cobbleCubes = new ArrayList<>();
     private ArrayList<Location> blocks;
 
     public CobbleCube(Location center, int size, Player owner) {
@@ -29,13 +31,19 @@ public class CobbleCube {
         this.size = size;
         this.owner = owner;
 
-        cobbleCubes.put(owner, this);
+        if (PlayerStorage.valueOf(owner) != null) {
+            this.playerStorage = PlayerStorage.valueOf(owner);
+        } else {
+            this.playerStorage = new PlayerStorage(owner);
+        }
+        playerStorage.getCubes().add(this);
+        cobbleCubes.add(this);
     }
 
     public static CobbleCube valueOf(Location location) {
-        for(CobbleCube c : getCobbleCubes().values()) {
-            for(Location loc : c.getOreGenCubeBlocks()) {
-                if(loc.equals(location)) {
+        for (CobbleCube c : getCobbleCubes()) {
+            for (Location loc : c.getOreGenCubeBlocks()) {
+                if (loc.equals(location)) {
                     return c;
                 }
             }
@@ -43,15 +51,15 @@ public class CobbleCube {
         return null;
     }
 
-    public static ArrayList<CobbleCube> valueOf(Player player) {
-        final ArrayList<CobbleCube> cubes = new ArrayList<>();
-        for(CobbleCube c : getCobbleCubes().values()) {
-            if(c.getOwner().equals(player)) {
-                cubes.add(c);
-            }
-        }
-        return cubes;
-    }
+//    public static ArrayList<CobbleCube> valueOf(Player player) {
+//        final ArrayList<CobbleCube> cubes = new ArrayList<>();
+//        for(CobbleCube c : getCobbleCubes()) {
+//            if(c.getOwner().equals(player)) {
+//                cubes.add(c);
+//            }
+//        }
+//        return cubes;
+//    }
 
     public int getSize() {
         return size;
@@ -61,7 +69,7 @@ public class CobbleCube {
         return center;
     }
 
-    public static HashMap<Player, CobbleCube> getCobbleCubes() {
+    public static ArrayList<CobbleCube> getCobbleCubes() {
         return cobbleCubes;
     }
 
@@ -124,7 +132,7 @@ public class CobbleCube {
     public static void saveCubes() {
         int saved = 0;
         for (int x = 0; x < CobbleCube.getCobbleCubes().size(); x++) {
-            final CobbleCube c = (CobbleCube) CobbleCube.getCobbleCubes().values().toArray()[x];
+            final CobbleCube c = (CobbleCube) CobbleCube.getCobbleCubes().get(x);
             final YamlConfiguration dataYaml = KillaCobblecube.dataYaml;
             final ConfigurationSection section = dataYaml.createSection(String.valueOf(x));
 
@@ -175,7 +183,7 @@ public class CobbleCube {
 
     public static void loadCubes() {
         final YamlConfiguration dataYaml = KillaCobblecube.dataYaml;
-        for(String s : dataYaml.getKeys(false)) {
+        for (String s : dataYaml.getKeys(false)) {
             final Player player = Bukkit.getServer().getOfflinePlayer(dataYaml.getString(s + ".owner uuid")).getPlayer();
             final int size = dataYaml.getInt(s + ".size");
             final Location centerLoc = new Location(Bukkit.getServer().getWorld(dataYaml.getString(s + ".center.world")), dataYaml.getInt(s + ".center.x"), dataYaml.getDouble(s + ".center.y"), dataYaml.getDouble(s + ".center.z"));
@@ -205,40 +213,71 @@ public class CobbleCube {
     }
 
     public void generateFrame() {
-        final int boxSize = size + 2;
-        final ArrayList<Location> blocks = new ArrayList<>();
+        final String direction = KillaCobblecubeUtils.getDirection(owner);
+        if (direction != null) {
+            final int boxSize = size + 2;
+            final ArrayList<Location> blocks = new ArrayList<>();
 
-        for (int x = 0; x < boxSize; x++) {
-            for (int y = 0; y < boxSize; y++) {
-                for (int z = 0; z < boxSize; z++) {
+            for (int x = 0; x < boxSize; x++) {
+                for (int y = 0; y < boxSize; y++) {
+                    for (int z = 0; z < boxSize; z++) {
 
-                    Block bl = getCenter().getBlock().getRelative(x, y, z);
+                        Block bl = null;
 
-                    if ((x == 0 || x == boxSize - 1) && (y == 0 || y == boxSize - 1) || (x == 0 || x == boxSize - 1) && (z == 0 || z == boxSize - 1) || (y == 0 || y == boxSize - 1) && (z == 0 || z == boxSize - 1)) {
-                        bl.setType(KillaCobblecube.plugin.getConfig().getString("settings.cube material") != null ? Material.valueOf(KillaCobblecube.plugin.getConfig().getString("settings.cube material")) : Material.BEDROCK);
-                        blocks.add(bl.getLocation());
+                        switch (direction) {
+                            case "north":
+                            case "west":
+                                // negative z
+                                bl = getCenter().getBlock().getRelative(-x, y, z);
+                                break;
+                            case "east":
+                                bl = getCenter().getBlock().getRelative(x, y, -z);
+                                break;
+                            case "south":
+                                // positive x
+                                bl = getCenter().getBlock().getRelative(x, y, z);
+                                break;
+                        }
+
+                        if(bl != null) {
+                            if (x == 0 && (y == 0 || y == boxSize - 1) || x == boxSize - 1 && (y == 0 || y == boxSize - 1) || (x == 0 || x == boxSize - 1) && (z == 0 || z == boxSize - 1) || (y == 0 || y == boxSize - 1) && (z == 0 || z == boxSize - 1)) {
+                                bl.setType(KillaCobblecube.plugin.getConfig().getString("settings.cube material") != null ? Material.valueOf(KillaCobblecube.plugin.getConfig().getString("settings.cube material")) : Material.BEDROCK);
+                                blocks.add(bl.getLocation());
+                            }
+                        }
                     }
                 }
             }
+
+            Bukkit.broadcastMessage(direction);
+
+            setBlocks(blocks);
+
+            cubeMin = blocks.get(0);
+            cubeMax = blocks.get(blocks.size() - 1);
+
+            if(!direction.equals("south")) {
+                oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() - 1, cubeMin.getY() - 1, cubeMin.getZ() - 1);
+                oreGenCubeMin.getBlock().setType(Material.GLASS);
+                oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() + 1, cubeMax.getY() + 1, cubeMax.getZ() + 1);
+                oreGenCubeMax.getBlock().setType(Material.GLASS);
+                oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
+            } else {
+                oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() + 1, cubeMin.getY() + 1, cubeMin.getZ() + 1);
+                oreGenCubeMin.getBlock().setType(Material.GLASS);
+                oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() - 1, cubeMax.getY() - 1, cubeMax.getZ() - 1);
+                oreGenCubeMax.getBlock().setType(Material.GLASS);
+                oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
+            }
+
+            for (Location l : oreGenCubeBlocks) {
+                l.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());
+            }
+
+            task = new OreGenerationTask(this);
+        } else {
+            owner.sendMessage("direction is null x_x");
         }
-
-        setBlocks(blocks);
-
-        cubeMin = blocks.get(0);
-        cubeMax = blocks.get(blocks.size() - 1);
-        final Location blockLocation1 = blocks.get(0);
-        final Location blockLocation2 = blocks.get(blocks.size() - 1);
-
-        oreGenCubeMin = new Location(blockLocation1.getWorld(), blockLocation1.getX() + 1, blockLocation1.getY() + 1, blockLocation1.getZ() + 1);
-        oreGenCubeMax = new Location(blockLocation2.getWorld(), blockLocation2.getX() - 1, blockLocation2.getY() - 1, blockLocation2.getZ() - 1);
-        oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
-
-        // fill the cube with random ores
-        for (Location l : oreGenCubeBlocks) {
-            l.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());
-        }
-
-        task = new OreGenerationTask(this);
     }
 
     public void generateOre() {
@@ -270,14 +309,18 @@ public class CobbleCube {
      * Removes all blocks from ore gen area and the cubes frame then removes cube from list
      */
     public void cleanUp() {
-        for(Location loc : oreGenCubeBlocks) {
+        for (Location loc : oreGenCubeBlocks) {
             loc.getBlock().setType(Material.AIR);
         }
 
-        for(Location loc : blocks) {
+        for (Location loc : blocks) {
             loc.getBlock().setType(Material.AIR);
         }
 
-        CobbleCube.getCobbleCubes().remove(getOwner(), this);
+        CobbleCube.getCobbleCubes().remove(this);
+
+        final PlayerStorage playerStorage = PlayerStorage.valueOf(owner);
+
+        playerStorage.getCubes().clear();
     }
 }
