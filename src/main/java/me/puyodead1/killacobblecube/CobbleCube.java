@@ -11,20 +11,21 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class CobbleCube {
     private Location center;
     private int size;
     private Location oreGenCubeMin, oreGenCubeMax, cubeMin, cubeMax;
-    private ArrayList<Location> oreGenCubeBlocks;
+    private List<Location> oreGenCubeBlocks;
     private OreGenerationTask task;
     private Player owner;
     private PlayerStorage playerStorage;
 
     //public static HashMap<Player, CobbleCube> cobbleCubes = new HashMap<>();
     public static ArrayList<CobbleCube> cobbleCubes = new ArrayList<>();
-    private ArrayList<Location> blocks;
+    private List<Location> blocks;
 
     public CobbleCube(Location center, int size, Player owner) {
         this.center = center;
@@ -73,15 +74,15 @@ public class CobbleCube {
         return cobbleCubes;
     }
 
-    public ArrayList<Location> getBlocks() {
+    public List<Location> getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<Location> blocks) {
+    public void setBlocks(List<Location> blocks) {
         this.blocks = blocks;
     }
 
-    public ArrayList<Location> getOreGenCubeBlocks() {
+    public List<Location> getOreGenCubeBlocks() {
         return oreGenCubeBlocks;
     }
 
@@ -113,7 +114,7 @@ public class CobbleCube {
         return cubeMax;
     }
 
-    public void setOreGenCubeBlocks(ArrayList<Location> oreGenCubeBlocks) {
+    public void setOreGenCubeBlocks(List<Location> oreGenCubeBlocks) {
         this.oreGenCubeBlocks = oreGenCubeBlocks;
     }
 
@@ -137,7 +138,7 @@ public class CobbleCube {
             final ConfigurationSection section = dataYaml.createSection(String.valueOf(x));
 
 
-            section.set("owner uuid", c.getOwner().getUniqueId());
+            section.set("owner uuid", c.getOwner().getUniqueId().toString());
             section.set("size", c.getSize());
 
             final ConfigurationSection centerSection = section.createSection("center");
@@ -249,26 +250,22 @@ public class CobbleCube {
                 }
             }
 
-            Bukkit.broadcastMessage(direction);
-
             setBlocks(blocks);
 
             cubeMin = blocks.get(0);
             cubeMax = blocks.get(blocks.size() - 1);
 
-            if(!direction.equals("south")) {
-                oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() - 1, cubeMin.getY() - 1, cubeMin.getZ() - 1);
-                oreGenCubeMin.getBlock().setType(Material.GLASS);
-                oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() + 1, cubeMax.getY() + 1, cubeMax.getZ() + 1);
-                oreGenCubeMax.getBlock().setType(Material.GLASS);
-                oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
-            } else {
+            if(direction.equals("south")) {
                 oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() + 1, cubeMin.getY() + 1, cubeMin.getZ() + 1);
-                oreGenCubeMin.getBlock().setType(Material.GLASS);
                 oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() - 1, cubeMax.getY() - 1, cubeMax.getZ() - 1);
-                oreGenCubeMax.getBlock().setType(Material.GLASS);
-                oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
+            } else if(direction.equals("east")) {
+                oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() + 1, cubeMin.getY() + 1, cubeMin.getZ() - 1);
+                oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() - 1, cubeMax.getY() - 1, cubeMax.getZ() + 1);
+            } else {
+                oreGenCubeMin = new Location(cubeMin.getWorld(), cubeMin.getX() - 1, cubeMin.getY() + 1, cubeMin.getZ() + 1);
+                oreGenCubeMax = new Location(cubeMax.getWorld(), cubeMax.getX() + 1, cubeMax.getY() - 1, cubeMax.getZ() - 1);
             }
+            oreGenCubeBlocks = KillaCobblecubeUtils.getBlocks(oreGenCubeMin, oreGenCubeMax);
 
             for (Location l : oreGenCubeBlocks) {
                 l.getBlock().setType(KillaCobblecube.generationMaterials.getRandom());

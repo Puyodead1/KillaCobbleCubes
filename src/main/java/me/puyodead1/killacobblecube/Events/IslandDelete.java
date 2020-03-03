@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 
@@ -27,14 +28,13 @@ public class IslandDelete implements Listener {
         if(playerStorage != null) {
             final ArrayList<CobbleCube> cubes = playerStorage.getCubes();
 
-            Bukkit.broadcastMessage("cubes: " + cubes.size());
-
             if(cubes.size() > 0) {
-                Bukkit.broadcastMessage("more then 0");
-//                for(CobbleCube cube : cubes) {
-//                    cube.getTask().cancel();
-//                    // cube.cleanUp();
-//                }
+                for(CobbleCube cube : cubes) {
+                    final BukkitScheduler scheduler = Bukkit.getScheduler();
+                    int taskID = cube.getTask().getTaskID();
+                    scheduler.cancelTask(taskID);
+                    cube.cleanUp();
+                }
 
                 KillaCobblecubeUtils.sendConsole(KillaCobblecube.PREFIX + "&aCleaned up &e" + cubes.size() + "&a cubes from " + player.getName());
             }
